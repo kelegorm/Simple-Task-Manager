@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:SkinnableContainer xmlns:fx="http://ns.adobe.com/mxml/2009"
+                      xmlns:s="library://ns.adobe.com/flex/spark"
+                      xmlns:mx="library://ns.adobe.com/flex/mx"
+                      skinClass="CommandsBarSkin">
+    <fx:Script>
+		<![CDATA[
+        import mx.collections.ArrayCollection;
+        ]]>
+	</fx:Script>
+    <fx:Declarations>
+        <!-- Place non-visual elements (e.g., services, value objects) here -->
+    </fx:Declarations>
+
+    <fx:Script>
+		<![CDATA[
+        import ru.kelegorm.simplemanager_api.Task;
+
+        [Bindable]
+        public var task:Task;
+
+
+        protected function buttonbar1_changeHandler(event:MouseEvent):void {
+            if ((bar.selectedIndex > -1)) {
+                preCommander(bar.selectedItem as String);
+            }
+        }
+
+        public function preCommander(name:String):void {
+            switch (name) {
+                case "open":
+                    task.command(name);
+                    break;
+                case "freeze":
+                    task.command(name);
+                    break;
+                case "resolve":
+                    currentState = "confirmResolve";
+                    break;
+                case "rediscover":
+                    currentState = "confirmRediscover";
+                    break;
+            }
+        }
+        ]]>
+	</fx:Script>
+
+    <s:states>
+        <s:State name="normal"/>
+        <s:State name="confirmResolve"/>
+        <s:State name="confirmRediscover"/>
+    </s:states>
+
+    <s:List id="bar"
+            includeIn="normal"
+            dataProvider="{task.commands}" click="buttonbar1_changeHandler(event)" skinClass="ButtonListSkin"/>
+
+    <s:VGroup includeIn="confirmResolve" horizontalAlign="contentJustify">
+        <s:Label text="Укажите резолюцию:" width="100%"/>
+        <s:List dataProvider="{new ArrayCollection(['Внедренно', 'Не нужно'])}" minHeight="0" minWidth="50"
+                width="100%">
+            <s:layout>
+                <s:VerticalLayout/>
+            </s:layout>
+        </s:List>
+        <s:Button label="Добавить комментарий"/>
+        <s:HGroup width="100%">
+            <s:Button label="OK" click="currentState = 'normal'; task.command('resolve');"/>
+            <s:Button label="Cancel" click="currentState = 'normal';"/>
+        </s:HGroup>
+    </s:VGroup>
+
+    <s:VGroup includeIn="confirmRediscover" horizontalAlign="contentJustify">
+        <s:Label text="Укажите резолюцию:" width="100%"/>
+        <s:List dataProvider="{new ArrayCollection(['Не доделано', 'Ошибка'])}" minHeight="0" minWidth="50"
+                width="100%">
+            <s:layout>
+                <s:VerticalLayout/>
+            </s:layout>
+        </s:List>
+        <s:Button label="Добавить комментарий"/>
+        <s:HGroup width="100%">
+            <s:Button label="OK" click="currentState = 'normal'; task.command('rediscover');"/>
+            <s:Button label="Cancel" click="currentState = 'normal';"/>
+        </s:HGroup>
+    </s:VGroup>
+</s:SkinnableContainer>

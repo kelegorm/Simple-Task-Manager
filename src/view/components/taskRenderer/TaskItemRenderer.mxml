@@ -1,0 +1,153 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:SkinnableContainer xmlns:fx="http://ns.adobe.com/mxml/2009"
+                      xmlns:s="library://ns.adobe.com/flex/spark"
+                      xmlns:mx="library://ns.adobe.com/flex/mx"
+                      xmlns:taskRenderer="view.components.taskRenderer.*"
+                      skinClass="view.components.taskRenderer.TaskItemRendererSkin"
+                      width="100%"
+                      currentState="close"
+                      click="skinnablecontainer1_clickHandler(event)"
+                      >
+
+    <fx:Declarations>
+
+    </fx:Declarations>
+
+    <fx:Script>
+		<![CDATA[
+        import mx.collections.ArrayCollection;
+
+        import ru.kelegorm.simplemanager_api.Task;
+
+        import spark.components.supportClasses.ButtonBase;
+        import spark.events.IndexChangeEvent;
+
+        [Bindable]
+        public var task:Task;
+
+        protected function skinnablecontainer1_clickHandler(event:MouseEvent):void {
+            if (!(event.target is ButtonBase))
+                changeState();
+        }
+
+        private function changeState():void {
+            switch (currentState) {
+                case "close":
+                    currentState = "open";
+                    break;
+                case "open":
+                    if (commandBar.currentState == "normal")
+                        currentState = "close";
+                    break;
+            }
+        }
+
+        protected function list1_changeHandler(event:IndexChangeEvent):void {
+            if (controlsBar.selectedIndex > -1) {
+                controllClick(controlsBar.selectedItem);
+            }
+        }
+
+        private function controllClick(name:String):void {
+            switch (name) {
+                case "edit": // начать редактировать
+                    editTask();
+                    break;
+                case "delete":
+                    deleteTask();
+                    break;
+                case "ok": // принять редактирование
+                    saveTask();
+                    break;
+
+                case "cancel": // отменить редактирование
+                    cancelEditTask();
+                    break;
+            }
+        }
+        
+        /** начать редактировать задачу */
+        private function editTask():void {
+            currentState = "edit";
+        }
+
+        /** начать редактировать задачу */
+        private function cancelEditTask():void {
+            currentState = "open";
+        }
+
+        /** Сохранить (попытаться) отредактированную задачу */
+        private function saveTask():void {
+            currentState = "open";
+        }
+
+
+        /**  */
+        private function deleteTask():void {
+
+        }
+
+
+        protected function controlsBar_clickHandler(event:MouseEvent):void {
+            /*if (controlsBar.selectedIndex) {
+             controllClick(controlsBar.selectedItem);
+             }*/
+        }
+        ]]>
+	</fx:Script>
+
+    <s:states>
+        <s:State name="close" stateGroups="closeGroup, viewGroup"/>
+        <s:State name="open" stateGroups="openGroup, viewGroup"/>
+        <s:State name="edit" stateGroups="openGroup, editGroup"/>
+    </s:states>
+
+    <s:transitions>
+        <s:Transition fromState="close" toState="open">
+            <s:Parallel duration="150">
+                <s:Resize targets="{[content]}"/>
+                <s:Fade targets="{[OpenGroup]}"/>
+            </s:Parallel>
+        </s:Transition>
+        <s:Transition fromState="open" toState="close">
+            <s:Parallel duration="150">
+                <s:Resize targets="{[content]}"/>
+                <s:Fade targets="{[OpenGroup]}"/>
+            </s:Parallel>
+        </s:Transition>
+    </s:transitions>
+
+    <s:VGroup horizontalAlign="contentJustify" width="100%" gap="0" id="content">
+        <s:Group width="100%">
+            <s:VGroup horizontalAlign="contentJustify" width="100%">
+                <s:HGroup width="100%" includeIn="viewGroup">
+                    <taskRenderer:TaskTypeRenderer TaskType="{task.type}" width="20" height="20"/>
+                    <s:Label id="captionLabel" text="#{task.id} {task.shortName}"
+                             height.close="20" height.open="100%"
+                             left="22" width="100%"/>
+                </s:HGroup>
+
+                <s:VGroup includeIn="editGroup">
+                    <s:Label text="Короткое описание"/>
+                    <s:TextArea id="captionTextEdit" text="@{task.shortName}"
+                                width="100%" minHeight="0"/>
+
+                </s:VGroup>
+            </s:VGroup>
+        </s:Group>
+
+        <s:VGroup id="OpenGroup" includeIn="openGroup">
+            <s:HGroup width="100%">
+                <taskRenderer:CommandsBar id="commandBar" task="{task}" includeIn="open"/>
+                <mx:Spacer width="100%"/>
+                <s:List id="controlsBar" skinClass="ButtonListSkin"
+                        dataProvider.viewGroup="{new ArrayCollection(['edit'])}"
+                        dataProvider.editGroup="{new ArrayCollection(['ok', 'cancel', 'x'])}"
+                        change="list1_changeHandler(event)"
+                        click="controlsBar_clickHandler(event)"/>
+            </s:HGroup>
+        </s:VGroup>
+    </s:VGroup>
+
+
+</s:SkinnableContainer>

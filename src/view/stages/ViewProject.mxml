@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:SkinnableContainer xmlns:fx="http://ns.adobe.com/mxml/2009"
+                      xmlns:s="library://ns.adobe.com/flex/spark"
+                      xmlns:mx="library://ns.adobe.com/flex/mx"
+                      xmlns:lists="view.components.lists.*"
+                      width="400" height="100%"
+                      horizontalCenter="0"
+                      xmlns:view="view.*"
+                      skinClass="ViewProjectSkin" >
+    <fx:Declarations>
+        <!-- Place non-visual elements (e.g., services, value objects) here -->
+
+    </fx:Declarations>
+
+    <fx:Script>
+		<![CDATA[
+        import ru.kelegorm.simplemanager_api.tasks.TaskLoader;
+
+        protected function button1_clickHandler(event:MouseEvent):void {
+            TaskLoader.taskParams.setStatus(freeButton.selected, workButton.selected, compButton.selected);
+        }
+
+
+        protected function AllButton_clickHandler(event:MouseEvent):void {
+            freeButton.selected = true;
+            workButton.selected = true;
+            compButton.selected = true;
+            TaskLoader.taskParams.setStatus(freeButton.selected, workButton.selected, compButton.selected);
+        }
+        ]]>
+	</fx:Script>
+
+    <s:HGroup id="header" width="100%" horizontalCenter="0">
+        <s:ToggleButton id="freeButton" label="freeze" click="button1_clickHandler(event)" selected="true"/>
+        <s:ToggleButton id="workButton" label="work" click="button1_clickHandler(event)" selected="true"/>
+        <s:ToggleButton id="compButton" label="complete" click="button1_clickHandler(event)" selected="true"/>
+        <s:Button label="all" click="AllButton_clickHandler(event)"/>
+    </s:HGroup>
+    <s:VGroup bottom="0" left="0" right="0" top="{header.height}">
+        <s:HGroup width="100%" verticalAlign="contentJustify">
+            <!---
+             Это верхняя панель. На ней - название проекта, краткая статистика,
+             кнопка возврата к списку проектов.
+            -->
+        </s:HGroup>
+        <!--- Компонент, показывающий список задач. -->
+        <lists:TaskDataGroup/>
+    </s:VGroup>
+
+</s:SkinnableContainer>

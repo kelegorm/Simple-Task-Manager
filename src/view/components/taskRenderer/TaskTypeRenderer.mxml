@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:Group xmlns:fx="http://ns.adobe.com/mxml/2009"
+         xmlns:s="library://ns.adobe.com/flex/spark"
+         xmlns:mx="library://ns.adobe.com/flex/mx">
+    <fx:Declarations>
+        <!-- Place non-visual elements (e.g., services, value objects) here -->
+    </fx:Declarations>
+
+    <fx:Script>
+		<![CDATA[
+        [Embed(source="../../../../assets/type_function.png", mimeType="image/png")]
+        private var imgFunction:Class;
+
+        [Embed(source="../../../../assets/type_error.png", mimeType="image/png")]
+        private var imgError:Class;
+
+        private var _taskType:int;
+
+        public function get TaskType():int {
+            return _taskType;
+        }
+
+        public function set TaskType(value:int):void {
+            _taskType = value;
+            setImage();
+        }
+
+        private function setImage():void {
+            switch (_taskType) {
+                case 0:
+                    img.source = new imgFunction();
+                    return;
+                case 1:
+                    img.source = new imgError();
+                    return;
+                default:
+                    img.source = null;
+                    return;
+            }
+        }
+        ]]>
+	</fx:Script>
+
+    <s:BitmapImage top="0" left="0" right="0" bottom="0" id="img"/>
+
+</s:Group>

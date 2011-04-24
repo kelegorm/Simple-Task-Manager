@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:Application xmlns:fx="http://ns.adobe.com/mxml/2009"
+               xmlns:s="library://ns.adobe.com/flex/spark"
+               xmlns:mx="library://ns.adobe.com/flex/mx"
+               xmlns:view="view.*"
+               xmlns:stages="view.stages.*"
+               height="100%" width="100%"
+               currentState="logon">
+    <fx:Declarations>
+        <!-- Place non-visual elements (e.g., services, value objects) here -->
+    </fx:Declarations>
+
+    <s:states>
+        <s:State name="logon"/>
+        <s:State name="start"/>
+        <s:State name="project"/>
+    </s:states>
+
+    <stages:ViewLogon includeIn="logon" onlogon="currentState='start'"/>
+    <stages:ViewStart id="start" includeIn="start" OpenProject="currentState='project'"/>
+    <stages:ViewProject includeIn="project"/>
+
+</s:Application>

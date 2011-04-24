@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!---
+ Эта панель отображает список задач
+-->
+<s:Group xmlns:fx="http://ns.adobe.com/mxml/2009"
+         xmlns:s="library://ns.adobe.com/flex/spark"
+         xmlns:mx="library://ns.adobe.com/flex/mx"
+         height="100%" width="100%"
+         creationComplete="group1_creationCompleteHandler(event)">
+    <fx:Declarations>
+        <!-- Place non-visual elements (e.g., services, value objects) here -->
+    </fx:Declarations>
+
+    <fx:Script>
+		<![CDATA[
+        import mx.collections.ArrayCollection;
+        import mx.events.FlexEvent;
+
+        import ru.kelegorm.simplemanager_api.GetTasksEvent;
+        import ru.kelegorm.simplemanager_api.GetTasksRequest;
+        import ru.kelegorm.simplemanager_api.tasks.TaskLoader;
+        import ru.kelegorm.simplemanager_api.tasks.ViewTaskParameters;
+
+        public var taskParams:ViewTaskParameters = new ViewTaskParameters();
+
+        private var request:GetTasksRequest;
+
+        protected function group1_creationCompleteHandler(event:FlexEvent):void {
+            createRequestObject();
+
+            TaskLoader.taskParams.addEventListener(ViewTaskParameters.PARAMS_CHANGED, taskParamsChanged);
+        }
+
+        private function taskParamsChanged(event:Event):void {
+           createRequestObject();
+        }
+
+        private function createRequestObject():void {
+            if (request != null) {
+                deleteRequestObject();
+            }
+
+            request = new GetTasksRequest();
+            request.addEventListener(GetTasksEvent.TASKS_LOADED, getTaskIdsResult);
+            request.addEventListener(GetTasksEvent.LOAD_ERROR, getTaskIdsError);
+            request.execute(null);
+        }
+
+        private function deleteRequestObject():void {
+            request.removeEventListener(GetTasksEvent.TASKS_LOADED, getTaskIdsResult);
+            request.removeEventListener(GetTasksEvent.LOAD_ERROR, getTaskIdsError);
+            request = null;
+        }
+
+        private function getTaskIdsError(event:GetTasksEvent):void {
+            deleteRequestObject();
+        }
+
+        private function getTaskIdsResult(event:GetTasksEvent):void {
+            if (event.items) {
+                taskList.dataProvider = event.items as ArrayCollection;
+            }
+            deleteRequestObject();
+        }
+        ]]>
+	</fx:Script>
+
+    <s:Scroller width="100%" height="100%">
+        <s:DataGroup id="taskList" top="0" left="0" right="0" bottom="0"
+                     itemRenderer="view.components.taskRenderer.TaskItemAdapter">
+            <s:layout>
+                <s:VerticalLayout horizontalAlign="contentJustify" gap="1"/>
+            </s:layout>
+        </s:DataGroup>
+    </s:Scroller>
+
+</s:Group>
+

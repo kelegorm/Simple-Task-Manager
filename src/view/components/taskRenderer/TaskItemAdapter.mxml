@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:ItemRenderer xmlns:fx="http://ns.adobe.com/mxml/2009"
+                xmlns:s="library://ns.adobe.com/flex/spark"
+                xmlns:mx="library://ns.adobe.com/flex/mx"
+                autoDrawBackground="false"
+                width="100%"
+                dataChange="itemrenderer1_dataChangeHandler(event)" xmlns:components="view.components.*"
+                xmlns:taskRenderer="view.components.taskRenderer.*">
+    <fx:Script>
+		<![CDATA[
+        import mx.events.FlexEvent;
+
+        import ru.kelegorm.simplemanager_api.GetTaskDataRequest;
+        import ru.kelegorm.simplemanager_api.GetTaskDataEvent;
+        import ru.kelegorm.simplemanager_api.TaskModel;
+        import ru.kelegorm.simplemanager_api.Task;
+
+        private var request:GetTaskDataRequest;
+
+        [Bindable]
+        private var task:Task;
+
+        protected function itemrenderer1_dataChangeHandler(event:FlexEvent):void {
+            createRequestObject();
+        }
+
+        private function deleteRequestObject():void {
+            request.removeEventListener(GetTaskDataEvent.TASK_LOADED, getTaskDataResult);
+            request.removeEventListener(GetTaskDataEvent.LOAD_ERROR, getTaskDataError);
+            request = null;
+        }
+
+        private function createRequestObject():void {
+            if (request != null) {
+                deleteRequestObject();
+            }
+
+            request = new GetTaskDataRequest();
+            request.addEventListener(GetTaskDataEvent.TASK_LOADED, getTaskDataResult);
+            request.addEventListener(GetTaskDataEvent.LOAD_ERROR, getTaskDataError);
+            request.execute(data as int);
+        }
+
+        private function getTaskDataError(event:GetTaskDataEvent):void {
+            deleteRequestObject();
+        }
+
+        private function getTaskDataResult(event:GetTaskDataEvent):void {
+            if (event.item != null) {
+                task = event.item;
+            }
+            deleteRequestObject();
+        }
+        ]]>
+	</fx:Script>
+
+    <taskRenderer:TaskItemRenderer task="{task}"/>
+
+</s:ItemRenderer>
